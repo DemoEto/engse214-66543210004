@@ -1,0 +1,21 @@
+function loginUserSecure(username, password) {
+    // Using parameterized queries (simulated)
+    const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+    return executeSecureQuery(query, [username, password]);
+}
+// ในไฟล์ profile.js
+document.addEventListener('DOMContentLoaded', () => {
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const params = new URLSearchParams(window.location.search);
+    const requestedId = params.get('id');
+
+    // **หัวใจสำคัญของการแก้ไข IDOR**
+    // ตรวจสอบว่า ID ที่ร้องขอกับ ID ของผู้ใช้ที่ล็อกอินตรงกันหรือไม่
+    if (loggedInUser.id.toString() !== requestedId) {
+        document.body.innerHTML = '<h1>Access Denied</h1>';
+        return;
+    }
+
+    // ถ้าผ่านการตรวจสอบ จึงค่อย fetch ข้อมูลโปรไฟล์
+    fetchUserProfile(requestedId);
+});
