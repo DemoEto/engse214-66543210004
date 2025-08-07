@@ -1,39 +1,28 @@
-function simpleHash(password) {
-    let hash = "hashed_";
-    for (let i = 0; i < password.length; i++) {
-        hash += (password.charCodeAt(i) % 10);
-    }
-    return hash + "_end";
+// auth.js
+
+function executeSecureQuery(query, params) {
+  alert(
+    "✅ SQL แบบปลอดภัย (Parameterized):\n\n" +
+      query +
+      "\n\nพารามิเตอร์: " +
+      JSON.stringify(params)
+  );
 }
 
-// แก้ไขฟังก์ชัน register
-registerForm.addEventListener('submit', async (e) => {
-    // ...
-    const hashedPassword = simpleHash(password); // Hashing รหัสผ่าน
+function testSecure(username, password) {
+  const query = `SELECT * FROM users WHERE username = ? AND password = ?`;
+  executeSecureQuery(query, [username, password]);
+}
 
-    const response = await fetch('http://localhost:3000/users', {
-        // ...
-        body: JSON.stringify({ email, password: hashedPassword }) // บันทึกค่า hash
-    });
-    // ...
-});
+// รอ DOM โหลดให้เรียบร้อยก่อน
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("login");
+  const user = document.getElementById("user");
+  const password = document.getElementById("password");
 
-// แก้ไขฟังก์ชัน login
-loginForm.addEventListener('submit', async (e) => {
-    // ...
-    const response = await fetch(`http://localhost:3000/users?email=${email}`);
-    const users = await response.json();
-
-    if (users.length > 0) {
-        const user = users[0];
-        // เปรียบเทียบรหัสผ่านที่ป้อนเข้ามาหลังจาก hash แล้ว
-        if (simpleHash(password) === user.password) {
-            // Login successful
-            localStorage.setItem('loggedInUser', JSON.stringify(user));
-            window.location.href = `/profile.html?id=${user.id}`;
-        } else {
-            // Invalid password
-        }
-    }
-    // ...
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    console.log("U submit");
+    testSecure(user.value, password.value);
+  });
 });
